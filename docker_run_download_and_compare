@@ -2,19 +2,23 @@
 
 require 'open3'
 
-url1 = ARGV.shift
-url2 = ARGV.shift
+loop do
 
-cmd = "docker run -i rranshous/imgcompare"
-#cmd = "docker run -i ubuntu:14.04 cat"
-puts "running cmd: #{cmd}"
-Open3.popen3(cmd) do |i, o, e, t|
-  puts "writing input"
-  i.sync = true
-  i.write "#{url1}\n#{url2}\n"
-  i.flush
-  puts "waiting on read"
-  r = o.read
-  puts "R: #{r}"
+  url1 = ARGV.shift
+  url2 = ARGV.shift
+
+  break if url1.nil? || url2.nil?
+
+  cmd = "docker run -i rranshous/imgcompare_distributed"
+  puts "running cmd: #{cmd}"
+  Open3.popen3(cmd) do |i, o, e, t|
+    puts "writing input"
+    i.sync = true
+    i.write "#{url1}\n#{url2}\n"
+    i.flush
+    puts "waiting on read"
+    r = o.gets
+    puts "R: #{r}"
+  end
+
 end
-

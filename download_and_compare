@@ -8,6 +8,8 @@ require 'phashion'
 # takes two urls via stdin
 # protocol is:
 # URL1\nURL2\n
+# than responds with
+# VALUE\n
 
 STDOUT.sync = true
 STDERR.sync = true
@@ -36,14 +38,23 @@ end
 def compare img_path1, img_path2
   img1 = Phashion::Image.new img_path1
   img2 = Phashion::Image.new img_path2
+  STDERR.puts "comparing"
   img1.distance_from img2
 end
 
-image_url1, image_url2 = parse_stdin
+def cycle
+  STDERR.puts "cycling"
+  image_url1, image_url2 = parse_stdin
 
-local_file1 = download_image image_url1
-local_file2 = download_image image_url2
+  local_file1 = download_image image_url1
+  local_file2 = download_image image_url2
 
-diff_score = compare local_file1.path, local_file2.path
+  diff_score = compare local_file1.path, local_file2.path
 
-STDOUT.write diff_score
+  STDOUT.puts diff_score
+  STDOUT.flush
+end
+
+loop do
+  cycle
+end
