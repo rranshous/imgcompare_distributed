@@ -1,0 +1,13 @@
+
+launch command in dir and all images in / sub that dir
+are compared against each other and a similarity score is generated
+
+want to be able to farm this out over a cluster
+
+
+implimentation idea:
+
+docker image which takes in two image URLs via stdin
+and will output their similarity score to stdout
+
+

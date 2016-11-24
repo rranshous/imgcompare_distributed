@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+
+require 'tempfile'
+require 'base64'
+require 'httparty'
+require 'phashion'
+
+# takes two urls via stdin
+# protocol is:
+# URL1\nURL2
+
+def parse_stdin stdin_data
+  d = stdin_data.split("\n", 2).map(&:strip)
+  STDERR.puts "STDIN PARSED: #{d}"
+  d
+end
+
+def download_image url
+  STDERR.puts "downloading #{url}"
+  image_data = HTTParty.get(url).parsed_response
+  STDERR.puts "downloaded #{image_data.length}"
+  fh = Tempfile.new Base64.urlsafe_encode64 url
+  fh.write image_data
+  fh.close
+  STDERR.puts "writing to #{fh.path}"
+  return fh
+end
+
+def compare img_path1, img_path2
+  img1 = Phashion::Image.new img_path1
+  img2 = Phashion::Image.new img_path2
+  img1.distance_from img2
+end
+
+image_url1, image_url2 = parse_stdin(STDIN.read)
+
+local_file1 = download_image image_url1
+local_file2 = download_image image_url2
+
+diff_score = compare local_file1.path, local_file2.path
+
+STDOUT.write diff_score

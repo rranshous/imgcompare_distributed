@@ -1,0 +1,10 @@
+FROM ruby:2.2.2
+
+RUN apt-get install -y libphash0-dev libpng-dev libjpeg-dev imagemagick
+
+ADD . /app
+WORKDIR /app
+
+RUN bundle install
+
+ENTRYPOINT bundle exec ruby download_and_compare
