@@ -1,4 +1,10 @@
-FROM ruby:2.2.2
+#FROM ruby:2.2.2
+FROM ubuntu:14.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update
+RUN apt-get install -y ruby ruby-dev
+RUN gem install bundler
 
 RUN apt-get install -y libphash0-dev libpng-dev libjpeg-dev imagemagick
 

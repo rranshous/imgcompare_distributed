@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+url1=$1
+url2=$2
+echo "$url1\n$url2" \
+  | docker run -a stdin -a stdout rranshous/imgcompare-download_and_compare
