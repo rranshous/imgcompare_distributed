@@ -1,6 +1,20 @@
-#!/usr/bin/env bash
+#!/usr/bin/env ruby
 
-url1=$1
-url2=$2
-echo "$url1\n$url2" \
-  | docker run -a stdin -a stdout rranshous/imgcompare-download_and_compare
+require 'open3'
+
+url1 = ARGV.shift
+url2 = ARGV.shift
+
+cmd = "docker run -i rranshous/imgcompare"
+#cmd = "docker run -i ubuntu:14.04 cat"
+puts "running cmd: #{cmd}"
+Open3.popen3(cmd) do |i, o, e, t|
+  puts "writing input"
+  i.sync = true
+  i.write "#{url1}\n#{url2}\n"
+  i.flush
+  puts "waiting on read"
+  r = o.read
+  puts "R: #{r}"
+end
+

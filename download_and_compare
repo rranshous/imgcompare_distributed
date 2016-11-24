@@ -7,12 +7,19 @@ require 'phashion'
 
 # takes two urls via stdin
 # protocol is:
-# URL1\nURL2
+# URL1\nURL2\n
 
-def parse_stdin stdin_data
-  d = stdin_data.split("\n", 2).map(&:strip)
-  STDERR.puts "STDIN PARSED: #{d}"
-  d
+STDOUT.sync = true
+STDERR.sync = true
+
+def parse_stdin
+  STDERR.puts "reading first from stdin"
+  url1 = STDIN.gets
+  STDERR.puts "first from stdin: #{url1}"
+  STDERR.puts "reading second from stdin"
+  url2 = STDIN.gets
+  STDERR.puts "first from stdin: #{url2}"
+  [url1, url2]
 end
 
 def download_image url
@@ -32,7 +39,7 @@ def compare img_path1, img_path2
   img1.distance_from img2
 end
 
-image_url1, image_url2 = parse_stdin(STDIN.read)
+image_url1, image_url2 = parse_stdin
 
 local_file1 = download_image image_url1
 local_file2 = download_image image_url2
