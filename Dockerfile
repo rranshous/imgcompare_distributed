@@ -1,4 +1,3 @@
-#FROM ruby:2.2.2
 FROM ubuntu:14.04
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -13,4 +12,4 @@ WORKDIR /app
 
 RUN bundle install
 
-ENTRYPOINT bundle exec ruby download_and_compare
+ENTRYPOINT bundle exec ruby stdin_download_and_compare
