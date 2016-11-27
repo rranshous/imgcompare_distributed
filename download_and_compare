@@ -17,10 +17,12 @@ STDERR.sync = true
 def parse_stdin
   STDERR.puts "reading first from stdin"
   url1 = STDIN.gets
+  url1 = url1.strip if url1
   STDERR.puts "first from stdin: #{url1}"
   STDERR.puts "reading second from stdin"
   url2 = STDIN.gets
-  STDERR.puts "first from stdin: #{url2}"
+  url2 = url2.strip if url2
+  STDERR.puts "second from stdin: #{url2}"
   [url1, url2]
 end
 
@@ -42,14 +44,30 @@ def compare img_path1, img_path2
   img1.distance_from img2
 end
 
+def clean_up *fhs
+  fhs.each(&:unlink)
+end
+
+def validate! *inputs
+  inputs.each do |input|
+    if input.nil? || input.strip == ''
+      exit 0
+    end
+  end
+end
+
 def cycle
   STDERR.puts "cycling"
   image_url1, image_url2 = parse_stdin
+
+  validate! image_url1, image_url2
 
   local_file1 = download_image image_url1
   local_file2 = download_image image_url2
 
   diff_score = compare local_file1.path, local_file2.path
+
+  clean_up local_file1, local_file2
 
   STDOUT.puts diff_score
   STDOUT.flush
