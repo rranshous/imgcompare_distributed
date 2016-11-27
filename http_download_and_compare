@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+require 'sinatra'
+require_relative 'download_and_compare'
+
+post '/diff' do
+  img1_href = params['img1_href']
+  img2_href = params['img2_href']
+  puts "Got hrefs: #{img1_href} :: #{img2_href}"
+  comparer = Comparer.new
+  downloader = Downloader.new
+  diff = :ERROR
+  puts "downloading"
+  downloader.download(img1_href, img2_href) do |path1, path2|
+    puts "comparing"
+    diff = comparer.compare path1, path2
+  end
+  puts "diff: #{diff}"
+  content_type :text
+  diff.to_s
+end
+
+post '/test' do
+  content_type :text
+  "success"
+end

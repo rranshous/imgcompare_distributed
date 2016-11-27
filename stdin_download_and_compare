@@ -4,6 +4,7 @@ require 'tempfile'
 require 'base64'
 require 'httparty'
 require 'phashion'
+require_relative 'download_and_compare'
 
 # takes two urls via stdin
 # protocol is:
@@ -26,28 +27,6 @@ def parse_stdin
   [url1, url2]
 end
 
-def download_image url
-  STDERR.puts "downloading #{url}"
-  image_data = HTTParty.get(url).parsed_response
-  STDERR.puts "downloaded #{image_data.length}"
-  fh = Tempfile.new Base64.urlsafe_encode64 url
-  fh.write image_data
-  fh.close
-  STDERR.puts "writing to #{fh.path}"
-  return fh
-end
-
-def compare img_path1, img_path2
-  img1 = Phashion::Image.new img_path1
-  img2 = Phashion::Image.new img_path2
-  STDERR.puts "comparing"
-  img1.distance_from img2
-end
-
-def clean_up *fhs
-  fhs.each(&:unlink)
-end
-
 def validate! *inputs
   inputs.each do |input|
     if input.nil? || input.strip == ''
@@ -62,14 +41,16 @@ def cycle
 
   validate! image_url1, image_url2
 
-  local_file1 = download_image image_url1
-  local_file2 = download_image image_url2
+  comparer = Comparer.new
+  downloader = Downloader.new
+  diff = :ERROR
+  STDERR.puts "downloading"
+  downloader.download(image_url1, image_url2) do |path1, path2|
+    STDERR.puts "comparing"
+    diff = comparer.compare path1, path2
+  end
 
-  diff_score = compare local_file1.path, local_file2.path
-
-  clean_up local_file1, local_file2
-
-  STDOUT.puts diff_score
+  STDOUT.puts diff
   STDOUT.flush
 end
 
