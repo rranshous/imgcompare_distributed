@@ -12,4 +12,5 @@ WORKDIR /app
 
 RUN bundle install
 
-ENTRYPOINT bundle exec ruby stdin_download_and_compare
+ENTRYPOINT bundle exec
+CMD http_download_and_compare
