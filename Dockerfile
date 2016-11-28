@@ -12,5 +12,5 @@ WORKDIR /app
 
 RUN bundle install
 
-ENTRYPOINT bundle exec
-CMD http_download_and_compare
+ENTRYPOINT ["bundle", "exec"]
+CMD ["http_download_and_compare", "-p", "80", "-o", "0.0.0.0"]
